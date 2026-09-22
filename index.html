@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Законы Кирхгофа — правила узлов и контуров для юных физиков</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF4E6; --card:#FFFDF6; --ink:#26221B; --ink-soft:#6B6355;
+    --u:#F2A007; --u-soft:#FBE9C4; --u-deep:#8F5E02;
+    --i:#18A78E; --i-soft:#CDEEE2; --i-deep:#0C6E5C;
+    --r:#E2593B; --r-soft:#F8D9CC; --r-deep:#A93A1F;
+    --ok:#3E9B4F; --bad:#D64545;
+    --bp:#E9F2F5; --bp-ink:#1F546C;
+    --line:rgba(38,34,27,.075);
+    --shadow:6px 7px 0 rgba(38,34,27,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Nunito',sans-serif;color:var(--ink);background-color:var(--paper);
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),
+                     linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:28px 28px;line-height:1.55;overflow-x:hidden;
+  }
+  [hidden]{display:none!important}
+  h1,h2,h3{font-family:'Unbounded',sans-serif;line-height:1.25}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+  svg text{font-family:'Nunito',sans-serif}
+
+  #jsBadge{position:fixed;right:14px;bottom:14px;z-index:1200;background:var(--ink);color:#F5EFE0;
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.74rem;padding:7px 13px;
+    border-radius:999px;border:2px solid var(--ink);box-shadow:0 3px 10px rgba(0,0,0,.25)}
+
+  .powerline{position:fixed;top:0;left:12px;right:44px;height:12px;z-index:900;pointer-events:none}
+  .pl-wire{position:absolute;left:0;right:0;top:5px;height:3px;border-radius:3px;background:var(--ink);opacity:.22}
+  .pl-dot{position:absolute;left:0;top:1px;width:11px;height:11px;border-radius:50%;
+    background:var(--i);border:2px solid var(--ink);box-shadow:0 0 0 3px var(--paper)}
+  .pl-lamp{position:fixed;top:1px;right:8px;z-index:900;width:22px;pointer-events:none}
+  .pl-lamp .bulb{fill:var(--card);stroke:var(--ink);stroke-width:2;transition:fill .4s}
+  .pl-lamp.lit .bulb{fill:var(--u)}
+
+  .hero{padding:64px 0 34px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+  .kicker{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.8rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px}
+  h1{font-size:clamp(2.2rem,5.4vw,3.7rem);font-weight:900;margin-bottom:16px}
+  h1 mark{display:inline-block;background:var(--i-soft);border:3px solid var(--ink);
+    border-radius:14px;padding:.02em .2em;transform:rotate(-2deg);box-shadow:var(--shadow)}
+  .lead{font-size:1.1rem;max-width:34em;color:#3d382e;margin-bottom:20px}
+  .formula-art{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+  .fa-tile{min-width:110px;height:64px;padding:0 14px;display:grid;place-items:center;border:3px solid var(--ink);
+    border-radius:18px;background:var(--cs);font-family:'JetBrains Mono',monospace;font-weight:800;
+    font-size:1.3rem;cursor:help;box-shadow:var(--shadow)}
+  .fa-op{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.6rem}
+  .fa-hint{width:100%;font-size:.84rem;color:var(--ink-soft)}
+  .btn{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--paper);
+    border:2.5px solid var(--ink);border-radius:14px;padding:12px 20px;font-family:'Nunito',sans-serif;
+    font-weight:800;font-size:1rem;cursor:pointer;box-shadow:4px 5px 0 rgba(38,34,27,.25);
+    text-decoration:none;transition:transform .15s}
+  .btn:hover{transform:translate(-2px,-2px)}
+  .hero-scene{background:var(--card);border:3px solid var(--ink);border-radius:24px;box-shadow:var(--shadow);padding:10px}
+  .hero-scene svg{display:block;width:100%;height:auto}
+  .scene-cap{text-align:center;font-size:.86rem;color:var(--ink-soft);padding:6px 6px 2px}
+
+  section{padding:64px 0 16px}
+  .sec-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:28px}
+  .sec-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem;
+    border:2.5px solid var(--ink);border-radius:12px;padding:7px 11px;background:var(--ns,var(--u-soft));
+    transform:rotate(-3deg);box-shadow:3px 4px 0 rgba(38,34,27,.15);flex:none}
+  .sec-head h2{font-size:clamp(1.35rem,2.8vw,1.9rem);font-weight:700;margin-bottom:5px}
+  .sec-head p{color:#4a4438;max-width:54em}
+
+  .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .hcard{background:var(--card);border:2.5px solid var(--ink);border-radius:20px;box-shadow:var(--shadow);padding:18px 20px}
+  .hcard h3{font-size:1.05rem;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+  .hc-letter{flex:none;width:48px;height:48px;display:grid;place-items:center;border:2.5px solid var(--ink);
+    border-radius:13px;background:var(--hc);font-family:'Unbounded',sans-serif;font-weight:900;
+    font-size:1.05rem;transform:rotate(-4deg)}
+  .hcard p{font-size:.93rem;margin-bottom:10px}
+  .hc-didyou{border-left:5px solid var(--hc2);background:var(--paper);border-radius:0 10px 10px 0;padding:8px 12px;font-size:.88rem}
+  .bridge{background:var(--i-soft);border:2px dashed var(--i);border-radius:14px;padding:12px 16px;
+    font-size:.95rem;font-weight:700;margin-top:18px}
+  .hist{background:var(--card);border:2.5px solid var(--ink);border-radius:16px;padding:14px 18px;
+    box-shadow:var(--shadow);margin-top:18px}
+  .hist summary{font-weight:800;cursor:pointer;font-family:'Unbounded',sans-serif;font-size:.95rem}
+  .hist p{margin-top:8px;font-size:.93rem}
+
+  .term{cursor:help;border-bottom:2.5px dashed rgba(38,34,27,.45);font-weight:700}
+  .term:hover{background:rgba(242,160,7,.18)}
+  #tooltip{position:fixed;z-index:1000;max-width:280px;background:var(--ink);color:var(--paper);
+    font-size:.86rem;line-height:1.45;padding:9px 13px;border-radius:11px;pointer-events:none;
+    opacity:0;transition:opacity .15s;font-weight:600}
+  #tooltip.show{opacity:1}
+  #tooltip::after{content:"";position:absolute;left:var(--ax,50%);bottom:-6px;width:12px;height:12px;
+    background:var(--ink);transform:translateX(-50%) rotate(45deg)}
+  #tooltip.below::after{bottom:auto;top:-6px}
+  .spark{position:fixed;width:9px;height:9px;z-index:1100;pointer-events:none}
+
+  .lab-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:start}
+  .scene-card,.panel{background:var(--card);border:2.5px solid var(--ink);border-radius:24px;box-shadow:var(--shadow);padding:15px}
+  .scene-card svg{width:100%;height:auto;display:block}
+  .ctl{margin-bottom:10px}
+  .ctl .clabel{display:flex;justify-content:space-between;font-weight:800;font-size:.9rem;margin-bottom:3px}
+  .ctl .clabel b{font-family:'JetBrains Mono',monospace}
+  .ctl input[type=range]{width:100%;height:26px;cursor:pointer}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+  .tool,.ubtn{border:2.5px solid var(--ink);border-radius:12px;padding:8px 12px;font-weight:800;
+    background:#fff;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.85rem;transition:transform .12s}
+  .tool:hover,.ubtn:hover{transform:translateY(-2px);background:var(--u-soft)}
+  .reads{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .read{flex:1;min-width:90px;border:2.5px solid var(--ink);border-radius:14px;padding:7px 9px;text-align:center;background:var(--paper)}
+  .read span{display:block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+  .read b{font-family:'JetBrains Mono',monospace;font-size:1.12rem}
+  .kchip{display:inline-block;border:2.5px solid;border-radius:999px;padding:6px 14px;
+    font-weight:800;font-size:.86rem;margin:2px 4px 2px 0}
+  .kchip.ok{background:#E4F3E6;border-color:var(--ok);color:var(--i-deep)}
+  .kchip.warn{background:var(--u-soft);border-color:var(--u);color:var(--u-deep)}
+  .off{opacity:.45;pointer-events:none}
+  .prof-row{display:flex;gap:12px;align-items:flex-start;margin-top:14px}
+  .prof-ava{flex:none;width:56px;height:56px}
+  .bubble{position:relative;background:#fff;border:2.5px solid var(--ink);border-radius:14px;
+    padding:10px 13px;font-size:.9rem;flex:1;min-height:52px;transition:opacity .18s}
+  .bubble::after{content:"";position:absolute;left:-9px;top:20px;width:13px;height:13px;background:#fff;
+    border-left:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink);transform:rotate(45deg)}
+  .graph-cap{font-size:.78rem;color:var(--ink-soft);text-align:center;margin-top:5px}
+  .pair-note{background:var(--u-soft);border:2px dashed var(--u);border-radius:12px;padding:9px 13px;
+    font-weight:700;font-size:.9rem;margin-top:10px}
+
+  .quiz-card{max-width:740px;margin:0 auto;background:var(--card);border:2.5px solid var(--ink);
+    border-radius:24px;box-shadow:var(--shadow);padding:26px 30px}
+  .q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+  .q-lamps{display:flex;gap:8px}
+  .q-lamp{width:22px}
+  .q-lamp .bulb{fill:var(--card);stroke:var(--ink);stroke-width:2;transition:fill .3s}
+  .q-lamp.lit .bulb{fill:var(--u)}
+  .q-count{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem;color:var(--ink-soft)}
+  .q-text{font-size:1.1rem;font-weight:600;margin-bottom:16px}
+  .q-answers{display:grid;gap:10px;margin-bottom:14px}
+  .q-ans{text-align:left;border:2.5px solid var(--ink);border-radius:14px;background:#fff;
+    padding:12px 16px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;cursor:pointer;
+    transition:transform .12s;box-shadow:3px 4px 0 rgba(38,34,27,.14)}
+  .q-ans:not(:disabled):hover{transform:translate(-2px,-2px)}
+  .q-ans:disabled{cursor:default;opacity:.45}
+  .q-ans.good{background:#DFF2E1;border-color:var(--ok);opacity:1}
+  .q-ans.bad{background:#FBE3E3;border-color:var(--bad);opacity:1}
+  .hint-btn{border:2.5px dashed var(--ink);background:transparent;border-radius:12px;padding:8px 15px;
+    font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer}
+  .hint-btn:hover{background:var(--u-soft)}
+  .q-hint{background:var(--u-soft);border:2px dashed var(--u);border-radius:12px;padding:9px 14px;font-weight:700}
+  .q-why{background:#E4F3E6;border:2.5px solid var(--ok);border-radius:14px;padding:11px 15px;font-weight:600;margin-bottom:14px}
+  .q-final{text-align:center;padding:14px 0}
+  .qf-score{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ink-soft)}
+  .qf-title{font-family:'Unbounded',sans-serif;font-weight:900;font-size:1.5rem;margin:8px 0 12px;color:var(--u-deep)}
+  .shake{animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+  .cheat{margin:56px auto 0;background:var(--ink);color:var(--paper);border-radius:24px;padding:26px 30px;box-shadow:var(--shadow)}
+  .cheat h3{color:var(--paper);font-size:1.15rem;margin-bottom:12px}
+  .cheat-row{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(.95rem,2.4vw,1.25rem);
+    display:flex;gap:8px 20px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .cheat-row .c1{color:#4BD6BC}.cheat-row .c2{color:#FFC64D}.cheat-row .c3{color:#FF8A66}
+  .rules4{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+  .rules4>div{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.18);border-radius:14px;padding:12px 14px}
+  .rules4 b{display:block;font-family:'Unbounded',sans-serif;font-size:.8rem;margin-bottom:5px;color:#4BD6BC}
+  .rules4 p{font-size:.84rem;color:#D8D2C4}
+  .cheat>p{font-size:.93rem;color:#D8D2C4}
+  footer{padding:48px 22px 36px;text-align:center;color:var(--ink-soft);font-size:.9rem}
+  footer b{color:var(--ink)}
+
+  @media(max-width:980px){
+    .hero-grid,.lab-grid{grid-template-columns:1fr}
+    .cards3{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="jsBadge">⏳ JS загружается…</div>
+
+<div class="powerline"><div class="pl-wire"></div><div class="pl-dot" id="plDot"></div></div>
+<svg class="pl-lamp" id="plLamp" viewBox="0 0 24 34" aria-hidden="true">
+  <path class="bulb" d="M12 2a9 9 0 0 1 9 9c0 3.4-2 5.6-3.4 7.4-.8 1-1.1 2-1.2 3.1H7.6c-.1-1.1-.4-2.1-1.2-3.1C5 16.6 3 14.4 3 11a9 9 0 0 1 9-9z"/>
+  <rect x="7" y="23.6" width="10" height="3.2" rx="1.4" fill="var(--ink)"/>
+  <rect x="7.6" y="28.4" width="8.8" height="2.6" rx="1.2" fill="var(--ink)"/>
+</svg>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker">· урок десятый · правила цепей · законы кирхгофа ·</div>
+      <h1>Законы <mark>Кирхгофа</mark></h1>
+      <p class="lead">Закон Ома умеет считать <b>один элемент</b>. А если в схеме развилки и кольца?
+        Тут работают два правила: <b class="term" data-term="uzel">узел</b> не копит заряд,
+        а <b class="term" data-term="kont">контур</b> всегда возвращается на ту же «высоту».
+        Эти два правила открывают любую схему!</p>
+      <div class="formula-art">
+        <span class="fa-tile term" data-term="sumI" style="--cs:var(--i-soft)">ΣI = 0</span>
+        <span class="fa-op">·</span>
+        <span class="fa-tile term" data-term="sumU" style="--cs:var(--u-soft)">ΣU = 0</span>
+        <span class="fa-hint">Слева — правило узлов, справа — правило контуров. Наведи на плитки!</span>
+      </div>
+      <a class="btn" href="#nodelab">К узлу с тремя амперметрами</a>
+    </div>
+
+    <div class="hero-scene">
+      <svg id="heroSvg" viewBox="0 0 380 320" aria-label="Узел: два тока втекают, один вытекает">
+        <rect x="6" y="6" width="368" height="308" rx="16" fill="var(--bp)" stroke="var(--ink)" stroke-width="2.5"/>
+        <text x="190" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">УЗЕЛ · ПРИШЛО = УШЛО</text>
+        <path d="M30 160 H181 M190 30 V151 M199 160 H350" fill="none" stroke="var(--ink)" stroke-width="10" stroke-linecap="round"/>
+        <path d="M30 160 H181 M190 30 V151 M199 160 H350" fill="none" stroke="#FFFDF6" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="190" cy="160" r="11" fill="var(--ink)"/>
+        <g id="heroDots"></g>
+        <text x="100" y="138" text-anchor="middle" font-size="13" font-weight="800" fill="var(--i-deep)" font-family="JetBrains Mono,monospace">2 А →</text>
+        <text x="216" y="72" font-size="13" font-weight="800" fill="var(--i-deep)" font-family="JetBrains Mono,monospace">↓ 1 А</text>
+        <text x="272" y="138" font-size="13" font-weight="800" fill="var(--i-deep)" font-family="JetBrains Mono,monospace">→ 3 А</text>
+        <text id="heroCnt" x="190" y="290" text-anchor="middle" font-size="13.5" font-weight="800" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">втекает: 3 А · вытекает: 3 А ✓</text>
+        <text x="190" y="312" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)" font-family="JetBrains Mono,monospace">заряд не копится — таков первый закон Кирхгофа</text>
+      </svg>
+      <div class="scene-cap">Развилка реки: сколько притекло — столько разошлось. Всегда. Без исключений.</div>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ═══ 01 · ДВА ПРАВИЛА ═══ -->
+<section id="laws">
+  <div class="wrap">
+    <div class="sec-head" style="--ns:var(--i-soft)">
+      <span class="sec-num">01</span>
+      <div><h2>Два правила, которые решают любую схему</h2>
+      <p>Одно про развилки, другое про кольца. Вместе с законом Ома — универсальный ключ ко всем цепям мира.</p></div>
+    </div>
+    <div class="cards3">
+      <div class="hcard" style="--hc:var(--i-soft);--hc2:var(--i)">
+        <h3><span class="hc-letter">ΣI</span> Правило узлов</h3>
+        <p><b>Первый закон:</b> в <span class="term" data-term="uzel">узле</span> заряд не копится.
+           Сколько втекает за секунду — столько и вытекает: <b>ΣI = 0</b>. Как развилка реки:
+           сколько притекло — столько разошлось по рукавам.</p>
+        <div class="hc-didyou">Проверь в лаборатории: перекрой выход узла — и все входы обязаны встать в ноль!</div>
+      </div>
+      <div class="hcard" style="--hc:var(--u-soft);--hc2:var(--u)">
+        <h3><span class="hc-letter">ΣU</span> Правило контуров</h3>
+        <p><b>Второй закон:</b> пройди по замкнутому <span class="term" data-term="kont">контуру</span>,
+           складывая напряжения, — получишь ноль: <b>ΣU = 0</b>. Вернулся в стартовую точку —
+           «электрическая высота» та же, как после кругосветки.</p>
+        <div class="hc-didyou">Батарея — подъёмник, резистор — спуск. Каждый подъём где-то компенсируется спуском!</div>
+      </div>
+      <div class="hcard" style="--hc:var(--r-soft);--hc2:var(--r)">
+        <h3><span class="hc-letter">∞</span> Вместе — любая цепь</h3>
+        <p>С законом Ома эти два правила — универсальный ключ: неизвестных токов в схеме ровно столько,
+           сколько уравнений дают узлы и контуры. Любая схема — решаема!</p>
+        <div class="hc-didyou">Формулы «последовательно/параллельно» из урока про цепи — просто следствия Кирхгофа!</div>
+      </div>
+    </div>
+    <div class="bridge">Мостик из урока третьего: помнишь решатель, который считал твои цепи на верстаке?
+      Он в каждом кадре честно выполняет именно эти два правила — и потому лампы светят, а моторы крутятся.</div>
+    <details class="hist">
+      <summary>Густав Кирхгоф: два закона в 21 год</summary>
+      <p>1845 год, Кёнигсберг. Студент Густав Кирхгоф формулирует оба правила цепей — ему <b>21 год</b>,
+         он ещё учится в университете. Правила оказались настолько фундаментальными, что работают
+         без изменений до сих пор — от фонарика до электростанции.</p>
+      <p>А потом Кирхгоф вместе с Робертом Бунзеном изобрёл спектральный анализ: по цвету пламени
+         они открыли <b>цезий и рубидий</b>! Человек, который научил нас считать узлы, заодно
+         научил узнавать химические элементы по свету.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ═══ 02 · УЗЕЛ ═══ -->
+<section id="nodelab">
+  <div class="wrap">
+    <div class="sec-head" style="--ns:var(--u-soft)">
+      <span class="sec-num">02</span>
+      <div><h2>Лаборатория узла: первый закон</h2>
+      <p>Крути токи источников и смотри на три амперметра. А потом — самое интересное:
+         перекрой выход и посмотри, что станет с входами!</p></div>
+    </div>
+    <div class="lab-grid">
+      <div class="scene-card">
+        <svg id="ndSvg" viewBox="0 0 720 300">
+          <rect x="6" y="6" width="708" height="288" rx="16" fill="var(--bp)" stroke="var(--ink)" stroke-width="2.5"/>
+          <text x="360" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">ТРИ ВЕТКИ · ОДИН УЗЕЛ</text>
+          <path d="M60 150 H341 M360 40 V141 M379 150 H660" fill="none" stroke="var(--ink)" stroke-width="10" stroke-linecap="round"/>
+          <path d="M60 150 H341 M360 40 V141 M379 150 H660" fill="none" stroke="#FFFDF6" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="360" cy="150" r="12" fill="var(--ink)"/>
+          <text x="360" y="185" text-anchor="middle" font-size="11" font-weight="800" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">узел</text>
+          <g id="ndDots"></g>
+          <g id="g1"></g><g id="g2"></g><g id="g3"></g>
+          <text id="ndStat" x="360" y="278" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">выход открыт · ток свободно уходит по правой ветке</text>
+        </svg>
+        <div class="graph-cap">Скорость частиц в каждой ветке — честная: пропорциональна току этой ветки.</div>
+      </div>
+      <div class="panel">
+        <div id="ndSliders">
+          <div class="ctl">
+            <div class="clabel"><span>Ток источника 1 (слева)</span><b id="ndV1" style="color:var(--i-deep)">2,0 А</b></div>
+            <input type="range" id="ndI1" min="0" max="4" step="0.5" value="2" style="accent-color:var(--i)">
+          </div>
+          <div class="ctl">
+            <div class="clabel"><span>Ток источника 2 (сверху)</span><b id="ndV2" style="color:var(--i-deep)">1,0 А</b></div>
+            <input type="range" id="ndI2" min="0" max="4" step="0.5" value="1" style="accent-color:var(--i)">
+          </div>
+        </div>
+        <div class="reads">
+          <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">I₁ втекает</span><b id="rNd1">2,0 А</b></div>
+          <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">I₂ втекает</span><b id="rNd2">1,0 А</b></div>
+          <div class="read" style="border-color:var(--u)"><span style="color:var(--u-deep)">I₃ вытекает</span><b id="rNd3">3,0 А</b></div>
+        </div>
+        <div><span class="kchip ok" id="ndChip">пришло 3,0 А · ушло 3,0 А ✓</span></div>
+        <div class="btnrow">
+          <button class="tool" id="ndCut" type="button">✂ Перекрыть выход</button>
+        </div>
+        <p class="pair-note" id="ndNote" hidden><b>Смотри!</b> Выход закрыт — и входы встали в ноль.
+           Узел не умеет копить заряд: раз оттуда ток не уходит, сюда он и течь не может.
+           Первый закон — физика, а не арифметика!</p>
+        <div class="prof-row">
+          <svg class="prof-ava" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="36" r="22" fill="#F7E3C8" stroke="#26221B" stroke-width="2.5"/>
+            <path d="M10 36 Q 8 10 32 8 Q 56 10 54 36 Q 48 24 32 24 Q 16 24 10 36 Z" fill="#26221B"/>
+            <circle cx="23" cy="38" r="7.5" fill="#fff" stroke="#26221B" stroke-width="2"/>
+            <circle cx="41" cy="38" r="7.5" fill="#fff" stroke="#26221B" stroke-width="2"/>
+            <circle cx="23" cy="39" r="2" fill="#26221B"/><circle cx="41" cy="39" r="2" fill="#26221B"/>
+            <path d="M26 50 Q 32 55 38 50" fill="none" stroke="#26221B" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="bubble" id="profBubble">Густав Кирхгоф к услугам! Мне было 21, когда я записал
+            эти два правила. Крутите токи — узел никогда не ошибётся.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 03 · КОНТУР ═══ -->
+<section id="looplab">
+  <div class="wrap">
+    <div class="sec-head" style="--ns:var(--i-soft)">
+      <span class="sec-num">03</span>
+      <div><h2>Лаборатория контура: второй закон</h2>
+      <p>Жёлтый путник идёт по контуру с «высотомером потенциала». Батарея — подъём, резисторы — спуски.
+         Круг замкнулся — высота та же: <b>ΣU = 0</b>. График внизу рисует его маршрут!</p></div>
+    </div>
+    <div class="lab-grid">
+      <div class="scene-card">
+        <svg id="lpSvg" viewBox="0 0 720 348">
+          <rect x="6" y="6" width="708" height="336" rx="16" fill="var(--bp)" stroke="var(--ink)" stroke-width="2.5"/>
+          <text x="360" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">ПО КОНТУРУ: ПОДЪЁМ НА БАТАРЕЕ · СПУСКИ НА РЕЗИСТОРАХ</text>
+          <!-- контур -->
+          <path d="M140 120 V70 H580 V210 H140 V145" fill="none" stroke="var(--ink)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M140 120 V70 H580 V210 H140 V145" fill="none" stroke="#FFFDF6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- батарея -->
+          <line x1="115" y1="120" x2="165" y2="120" stroke="var(--ink)" stroke-width="3.5"/>
+          <line x1="127" y1="145" x2="153" y2="145" stroke="var(--ink)" stroke-width="8"/>
+          <text x="172" y="124" font-size="12" font-weight="800" fill="var(--ink)">+</text>
+          <text x="172" y="150" font-size="12" font-weight="800" fill="var(--ink)">−</text>
+          <text x="126" y="137" text-anchor="end" font-size="12.5" font-weight="800" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">E = 4,5 В</text>
+          <!-- резисторы -->
+          <rect x="325" y="57" width="70" height="26" rx="4" fill="#FFFDF6" stroke="var(--ink)" stroke-width="2.6"/>
+          <text id="r1Lbl" x="360" y="46" text-anchor="middle" font-size="12.5" font-weight="800" fill="var(--r-deep)" font-family="JetBrains Mono,monospace">R₁ · 3 Ом</text>
+          <rect x="325" y="197" width="70" height="26" rx="4" fill="#FFFDF6" stroke="var(--ink)" stroke-width="2.6"/>
+          <text id="r2Lbl" x="360" y="244" text-anchor="middle" font-size="12.5" font-weight="800" fill="var(--r-deep)" font-family="JetBrains Mono,monospace">R₂ · 6 Ом</text>
+          <!-- стрелки тока -->
+          <polygon points="488,64 500,70 488,76" fill="var(--i)" stroke="var(--ink)" stroke-width="1.2"/>
+          <polygon points="262,204 250,210 262,216" fill="var(--i)" stroke="var(--ink)" stroke-width="1.2"/>
+          <!-- путник -->
+          <circle id="walkDot" cx="140" cy="210" r="9" fill="var(--u)" stroke="var(--ink)" stroke-width="2.4"/>
+          <text id="walkV" x="156" y="200" font-size="12" font-weight="800" fill="var(--u-deep)" font-family="JetBrains Mono,monospace">+0,0 В</text>
+          <!-- график потенциала -->
+          <line x1="24" y1="316" x2="696" y2="316" stroke="var(--ink)" stroke-width="2.2"/>
+          <line x1="24" y1="257.5" x2="696" y2="257.5" stroke="rgba(38,34,27,.3)" stroke-width="1.6" stroke-dasharray="5 5"/>
+          <text x="696" y="254" text-anchor="end" font-size="10" font-weight="800" fill="var(--ink-soft)" font-family="JetBrains Mono,monospace">E</text>
+          <line id="midLine" x1="24" y1="296" x2="696" y2="296" stroke="rgba(38,34,27,.3)" stroke-width="1.6" stroke-dasharray="5 5"/>
+          <text id="midLbl" x="696" y="309" text-anchor="end" font-size="10" font-weight="800" fill="var(--ink-soft)" font-family="JetBrains Mono,monospace">E−U₁</text>
+          <polyline id="vPoly" fill="none" stroke="var(--u)" stroke-width="3" stroke-linejoin="round" points=""/>
+          <circle id="vDot" cx="24" cy="316" r="5.5" fill="var(--i)" stroke="var(--ink)" stroke-width="2"/>
+          <text x="24" y="331" text-anchor="middle" font-size="10" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">старт</text>
+          <text x="696" y="331" text-anchor="middle" font-size="10" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">финиш</text>
+          <text x="360" y="344" text-anchor="middle" font-size="11" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">путь по контуру → высота = потенциал</text>
+        </svg>
+        <div class="graph-cap">Жёлтая линия — потенциал на каждом шаге пути. Линия началась и закончила на нуле: ΣU = 0!</div>
+      </div>
+      <div class="panel">
+        <div class="ctl">
+          <div class="clabel"><span>Сопротивление R₁</span><b id="lpR1v" style="color:var(--r-deep)">3 Ом</b></div>
+          <input type="range" id="lpR1" min="1" max="10" step="1" value="3" style="accent-color:var(--r)">
+        </div>
+        <div class="ctl">
+          <div class="clabel"><span>Сопротивление R₂</span><b id="lpR2v" style="color:var(--r-deep)">6 Ом</b></div>
+          <input type="range" id="lpR2" min="1" max="10" step="1" value="6" style="accent-color:var(--r)">
+        </div>
+        <div class="reads">
+          <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">ток I</span><b id="rI">0,50 А</b></div>
+          <div class="read" style="border-color:var(--u)"><span style="color:var(--u-deep)">U₁ = I·R₁</span><b id="rU1">1,5 В</b></div>
+          <div class="read" style="border-color:var(--u)"><span style="color:var(--u-deep)">U₂ = I·R₂</span><b id="rU2">3,0 В</b></div>
+        </div>
+        <div><span class="kchip ok" id="kvlChip">E − U₁ − U₂ = 4,5 − 1,5 − 3,0 = 0 В ✓</span></div>
+        <p class="pair-note">Высотная аналогия: батарея — лифт наверх, резисторы — спуски с горы.
+           Как ни меняй крутизну спусков, круг всегда замыкается на той же высоте!</p>
+        <p style="font-size:.9rem;color:#3d382e;margin-top:10px">Заметь: чем больше R₂, тем положе
+           его спуск на графике, но ток меньше — и спуск R₁ становится короче. Сумма — всегда 4,5 В.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 04 · ОБА ЗАКОНА ═══ -->
+<section id="both">
+  <div class="wrap">
+    <div class="sec-head" style="--ns:var(--r-soft)">
+      <span class="sec-num">04</span>
+      <div><h2>Оба закона в деле: считаем настоящую схему</h2>
+      <p>Батарея 9 В, резистор R₁, и развилка на R₂ и R₃. Два неизвестных тока — и два уравнения
+         Кирхгофа. Меняй сопротивления и проверяй чипы: законы сходятся всегда!</p></div>
+    </div>
+    <div class="lab-grid">
+      <div class="scene-card">
+        <svg id="cbSvg" viewBox="0 0 720 300">
+          <rect x="6" y="6" width="708" height="288" rx="16" fill="var(--bp)" stroke="var(--ink)" stroke-width="2.5"/>
+          <text x="360" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">УЗЕЛ А ДЕЛИТ ТОК · КОНТУР ЕГО СОБИРАЕТ</text>
+          <path d="M90 130 V80 H620 V240 H90 V158 M440 80 V240" fill="none" stroke="var(--ink)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M90 130 V80 H620 V240 H90 V158 M440 80 V240" fill="none" stroke="#FFFDF6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- батарея -->
+          <line x1="65" y1="130" x2="115" y2="130" stroke="var(--ink)" stroke-width="3.5"/>
+          <line x1="78" y1="158" x2="102" y2="158" stroke="var(--ink)" stroke-width="8"/>
+          <text x="122" y="134" font-size="11" font-weight="800" fill="var(--ink)">+</text>
+          <text x="122" y="166" font-size="11" font-weight="800" fill="var(--ink)">−</text>
+          <text x="135" y="149" font-size="12.5" font-weight="800" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">E = 9 В</text>
+          <!-- резисторы -->
+          <rect x="205" y="67" width="70" height="26" rx="4" fill="#FFFDF6" stroke="var(--ink)" stroke-width="2.6"/>
+          <text x="240" y="56" text-anchor="middle" font-size="12" font-weight="800" fill="var(--r-deep)" font-family="JetBrains Mono,monospace">R₁ · 2 Ом</text>
+          <rect x="607" y="125" width="26" height="70" rx="4" fill="#FFFDF6" stroke="var(--ink)" stroke-width="2.6"/>
+          <text x="650" y="152" font-size="12" font-weight="800" fill="var(--r-deep)" font-family="JetBrains Mono,monospace">R₂</text>
+          <text x="650" y="170" font-size="11" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace" id="cbR2l">4 Ом</text>
+          <rect x="427" y="125" width="26" height="70" rx="4" fill="#FFFDF6" stroke="var(--ink)" stroke-width="2.6"/>
+          <text x="414" y="152" text-anchor="end" font-size="12" font-weight="800" fill="var(--r-deep)" font-family="JetBrains Mono,monospace">R₃</text>
+          <text x="414" y="170" text-anchor="end" font-size="11" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace" id="cbR3l">4 Ом</text>
+          <!-- узлы -->
+          <circle cx="440" cy="80" r="8" fill="var(--ink)"/>
+          <text x="462" y="66" font-size="11" font-weight="800" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">узел А</text>
+          <circle cx="440" cy="240" r="8" fill="var(--ink)"/>
+          <text x="462" y="262" font-size="11" font-weight="800" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">узел Б</text>
+          <!-- подписи токов -->
+          <text x="340" y="106" text-anchor="middle" font-size="12" font-weight="800" fill="var(--i-deep)" font-family="JetBrains Mono,monospace">I₁</text>
+          <text x="652" y="116" font-size="12" font-weight="800" fill="var(--i-deep)" font-family="JetBrains Mono,monospace">I₂</text>
+          <text x="412" y="116" text-anchor="end" font-size="12" font-weight="800" fill="var(--i-deep)" font-family="JetBrains Mono,monospace">I₃</text>
+          <g id="cbDots"></g>
+        </svg>
+        <div class="graph-cap">Частицы бегут по всем веткам: скорость каждой — её ток. В узле А поток делится, в узле Б — собирается.</div>
+      </div>
+      <div class="panel">
+        <div class="ctl">
+          <div class="clabel"><span>Сопротивление R₂</span><b id="cbR2v" style="color:var(--r-deep)">4 Ом</b></div>
+          <input type="range" id="cbR2" min="1" max="10" step="1" value="4" style="accent-color:var(--r)">
+        </div>
+        <div class="ctl">
+          <div class="clabel"><span>Сопротивление R₃</span><b id="cbR3v" style="color:var(--r-deep)">4 Ом</b></div>
+          <input type="range" id="cbR3" min="1" max="10" step="1" value="4" style="accent-color:var(--r)">
+        </div>
+        <div class="reads">
+          <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">I₁ общий</span><b id="cbI1">2,25 А</b></div>
+          <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">I₂ ветка</span><b id="cbI2">1,13 А</b></div>
+          <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">I₃ ветка</span><b id="cbI3">1,13 А</b></div>
+        </div>
+        <div>
+          <span class="kchip ok" id="cbKcl">узел А: I₂ + I₃ = 2,25 А = I₁ ✓</span><br>
+          <span class="kchip ok" id="cbKvl">контур: U₁ + U₂₃ = 9 В = E ✓</span>
+        </div>
+        <p style="font-size:.9rem;color:#3d382e;margin-top:10px">Два неизвестных тока — два уравнения:
+           одно из узла А, другое из контура. Сделай R₃ большим — почти весь ток уйдёт через R₂:
+           ток ленив, он выбирает лёгкий путь!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 05 · ИГРА ═══ -->
+<section id="game">
+  <div class="wrap">
+    <div class="sec-head" style="--ns:var(--u-soft)">
+      <span class="sec-num">05</span>
+      <div><h2>Игра: восстанови ток</h2>
+      <p>Пять мини-задач на оба правила. Кирхгоф на твоей стороне!</p></div>
+    </div>
+    <div class="quiz-card">
+      <div class="q-top">
+        <div class="q-count" id="gScore">Верно: 0/0</div>
+        <div class="q-count" id="gPos">Задача 1 из 5</div>
+      </div>
+      <div id="gBody">
+        <div class="q-text" id="gT"></div>
+        <div class="q-answers" id="gBtns"></div>
+        <div class="q-why" id="gWhy" hidden></div>
+        <button class="btn" id="gNext" type="button">Следующая задача</button>
+      </div>
+      <div class="q-final" id="gFin" hidden>
+        <div class="qf-score" id="gScoreF"></div>
+        <div class="qf-title" id="gTitleF"></div>
+        <p id="gTextF" style="margin-bottom:16px"></p>
+        <button class="btn" id="gAgain" type="button">Играть ещё раз</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 06 · ТЕСТ ═══ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head" style="--ns:var(--i-soft)">
+      <span class="sec-num">06</span>
+      <div><h2>Проверь себя</h2>
+      <p>Шесть задачек. Каждая решённая с первой попытки зажигает лампочку.</p></div>
+    </div>
+    <div class="quiz-card">
+      <div class="q-top">
+        <div class="q-lamps" id="qLamps"></div>
+        <div class="q-count" id="qCount">Вопрос 1 из 6</div>
+      </div>
+      <div id="qBody">
+        <div class="q-text" id="qText"></div>
+        <div class="q-answers" id="qAnswers"></div>
+        <button class="hint-btn" id="qHintBtn" type="button">Показать подсказку</button>
+        <div class="q-hint" id="qHint" hidden style="margin-top:10px"></div>
+        <div style="margin-top:16px" id="qAfter" hidden>
+          <div class="q-why" id="qWhy"></div>
+          <button class="btn" id="qNext" type="button">Следующий вопрос</button>
+        </div>
+      </div>
+      <div class="q-final" id="qFinal" hidden>
+        <div class="qf-score" id="qfScore"></div>
+        <div class="qf-title" id="qfTitle"></div>
+        <p id="qfText" style="margin-bottom:16px"></p>
+        <button class="btn" id="qRestart" type="button">Пройти ещё раз</button>
+      </div>
+    </div>
+
+    <div class="cheat">
+      <h3>Шпаргалка схемотехника</h3>
+      <div class="cheat-row">
+        <span class="c1">ΣI = 0 · узел</span><span>·</span>
+        <span class="c2">ΣU = 0 · контур</span><span>·</span>
+        <span class="c3">пришло = ушло</span>
+      </div>
+      <div class="rules4">
+        <div><b>Узел — не копилка</b><p>Заряд не скапливается в точке соединения: сколько втекло за секунду — столько и вытекло. Иначе узел разорвало бы!</p></div>
+        <div><b>Контур — кругосветка</b><p>Обошёл замкнутый путь — вернулся на ту же «высоту потенциала»: все подъёмы равны всем спускам.</p></div>
+        <div><b>Пара с Омом</b><p>Ом считает каждый элемент, Кирхгоф связывает элементы в схему. Вместе — любая цепь по зубам.</p></div>
+        <div><b>1845 год · автору 21</b><p>Оба закона опубликовал студент Густав Кирхгоф. Позже — спектральный анализ с Бунзеном и открытие цезия с рубидием!</p></div>
+      </div>
+      <p>Теперь понятно, откуда берутся формулы из урока про цепи: «последовательно — складываем,
+         параллельно — произведение пополам» — это следствия двух правил. А решатель верстака
+         из третьего урока выполнял их каждый кадр. Схемы больше не тёмный лес: у тебя есть карта!</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <b>Законы Кирхгофа · урок десятый.</b> Ни один электрон на странице не потерялся и не остался лишним.
+</footer>
+
+<div id="tooltip" role="tooltip"></div>
+
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg';
+function $(id){return document.getElementById(id);}
+function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+function fmt(v,d){if(d===undefined)d=1;return v.toFixed(d).replace('.',',');}
+var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var BADGE=$('jsBadge'),badgeErr=false;
+window.addEventListener('error',function(e){
+  if(BADGE&&!badgeErr){badgeErr=true;BADGE.textContent='⚠ '+(e.message||'ошибка');}
+});
+function safe(name,fn){try{fn();}catch(e){
+  if(BADGE&&!badgeErr){badgeErr=true;BADGE.textContent='⚠ «'+name+'»: '+e.message;}
+}}
+
+/* ── словарик ── */
+var TERMS={
+  uzel:'УЗЕЛ — точка, где соединяются три и больше проводов. Первый закон Кирхгофа: заряд в узле не копится.',
+  kont:'КОНТУР — замкнутый путь по цепи. Второй закон: сумма напряжений по контуру равна нулю.',
+  sumI:'ΣI — сумма токов в узле со знаками: втекающие «плюс», вытекающие «минус». Всегда ноль!',
+  sumU:'ΣU — сумма напряжений по замкнутому контуру. Подъёмы (батареи) равны спускам (резисторы).',
+  pot:'ПОТЕНЦИАЛ — «электрическая высота» точки цепи. Разность потенциалов между двумя точками — это напряжение.'
+};
+safe('словарик',function(){
+  var tip=$('tooltip'),tipEl=null;
+  function showTip(el){
+    var def=TERMS[el.getAttribute('data-term')];if(!def)return;
+    tip.textContent=def;tip.classList.add('show');
+    var r=el.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight;
+    var x=clamp(r.left+r.width/2-tw/2,10,innerWidth-tw-10);
+    var y=r.top-th-11,below=(y<10);if(below)y=r.bottom+11;
+    tip.style.left=x+'px';tip.style.top=y+'px';
+    tip.style.setProperty('--ax',clamp(r.left+r.width/2-x,16,tw-16)+'px');
+    tip.classList.toggle('below',below);
+  }
+  document.addEventListener('mouseover',function(e){
+    var t=e.target.closest?e.target.closest('[data-term]'):null;
+    if(t){tipEl=t;showTip(t);}
+  });
+  document.addEventListener('mouseout',function(e){
+    if(tipEl&&(!e.relatedTarget||!tipEl.contains(e.relatedTarget))){tip.classList.remove('show');tipEl=null;}
+  });
+  document.addEventListener('click',function(e){
+    var t=e.target.closest?e.target.closest('[data-term]'):null;
+    if(t){tipEl=t;showTip(t);}
+    else tip.classList.remove('show');
+  });
+});
+
+var SPARK=['#F2A007','#18A78E','#E2593B','#F5C542','#26221B'];
+function burst(x,y){
+  if(reduced)return;
+  for(var i=0;i<14;i++){
+    var s=document.createElement('div');s.className='spark';
+    s.style.background=SPARK[i%SPARK.length];
+    s.style.left=x+'px';s.style.top=y+'px';document.body.appendChild(s);
+    var ang=Math.random()*Math.PI*2,d=45+Math.random()*60;
+    var anim=s.animate([
+      {transform:'translate(0,0) rotate(45deg) scale(1)',opacity:1},
+      {transform:'translate('+(Math.cos(ang)*d)+'px,'+(Math.sin(ang)*d+10)+'px) rotate('+(180+Math.random()*260)+'deg) scale(.25)',opacity:0}
+    ],{duration:550+Math.random()*350,easing:'cubic-bezier(.15,.6,.3,1)'});
+    anim.onfinish=(function(el){return function(){if(el.parentNode)el.parentNode.removeChild(el);};})(s);
+  }
+}
+
+var profB=$('profBubble'),profT=null;
+function prof(msg){
+  if(profB.getAttribute('data-cur')===msg)return;
+  profB.setAttribute('data-cur',msg);
+  clearTimeout(profT);profB.style.opacity=0;
+  profT=setTimeout(function(){profB.textContent=msg;profB.style.opacity=1;},180);
+}
+
+/* helpers */
+function mkDot(parent,r){
+  var c=document.createElementNS(NS,'circle');
+  c.setAttribute('r',r);c.setAttribute('fill','#18A78E');
+  c.setAttribute('stroke','#26221B');c.setAttribute('stroke-width','1.6');
+  parent.appendChild(c);return c;
+}
+function mkPath(pts){
+  var segs=[],L=0,i;
+  for(i=0;i<pts.length-1;i++){
+    var d=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);
+    segs.push(d);L+=d;
+  }
+  return {L:L,at:function(t){
+    t=((t%1)+1)%1;
+    var d=t*L,i2=0;
+    while(i2<segs.length-1&&d>segs[i2]){d-=segs[i2];i2++;}
+    var f=segs[i2]>0?d/segs[i2]:0;
+    return{x:pts[i2][0]+(pts[i2+1][0]-pts[i2][0])*f,y:pts[i2][1]+(pts[i2+1][1]-pts[i2][1])*f};
+  }};
+}
+function branch(parent,pts,count){
+  var p=mkPath(pts),dots=[],i;
+  for(i=0;i<count;i++){
+    dots.push({t:i/count,el:mkDot(parent,4.6)});
+  }
+  return {p:p,dots:dots,i:0};
+}
+function runBranch(b,dt){
+  var v=b.i*55;
+  for(var i=0;i<b.dots.length;i++){
+    var d=b.dots[i];
+    if(v>0)d.t=(d.t+v*dt/b.p.L)%1;
+    d.el.setAttribute('opacity',v>0?1:.3);
+    var pos=b.p.at(d.t);
+    d.el.setAttribute('cx',pos.x.toFixed(1));
+    d.el.setAttribute('cy',pos.y.toFixed(1));
+  }
+}
+function mkGauge(id,cx,cy){
+  var g=$(id);
+  function mk(n,a){var x=document.createElementNS(NS,n);for(var k in a)x.setAttribute(k,a[k]);g.appendChild(x);return x;}
+  mk('circle',{cx:cx,cy:cy,r:24,fill:'#FFFDF6',stroke:'#26221B','stroke-width':2.6});
+  var angles=[-60,0,60],i;
+  for(i=0;i<3;i++){
+    var a=angles[i]*Math.PI/180,s=Math.sin(a),c=Math.cos(a);
+    mk('line',{x1:cx+16*s,y1:cy-16*c,x2:cx+20*s,y2:cy-20*c,stroke:'#26221B','stroke-width':1.8});
+  }
+  var nd=mk('line',{x1:cx,y1:cy,x2:cx,y2:cy-15,stroke:'#8F5E02','stroke-width':3,'stroke-linecap':'round'});
+  mk('circle',{cx:cx,cy:cy,r:3,fill:'#26221B'});
+  var t=mk('text',{x:cx,y:cy+15,'text-anchor':'middle','font-size':10,'font-weight':800,fill:'#1F546C','font-family':'JetBrains Mono,monospace'});
+  t.textContent='A';
+  return {set:function(val,max){
+    var a=-60+clamp(val/max,0,1)*120;
+    nd.setAttribute('transform','rotate('+a.toFixed(1)+' '+cx+' '+cy+')');
+  }};
+}
+
+/* tick slots */
+var heroTick=function(){},ndTick=function(){},lpTick=function(){},cbTick=function(){};
+
+/* ═══ ГЕРОЙ: УЗЕЛ ═══ */
+safe('узел-герой',function(){
+  var g=$('heroDots');
+  var bL=branch(g,[[30,160],[181,160]],4);
+  var bT=branch(g,[[190,30],[190,151]],3);
+  var bR=branch(g,[[199,160],[350,160]],6);
+  bL.i=2;bT.i=1;bR.i=3;
+  heroTick=function(dt){runBranch(bL,dt);runBranch(bT,dt);runBranch(bR,dt);};
+});
+
+/* ═══ ЛАБОРАТОРИЯ УЗЛА ═══ */
+safe('лаборатория-узла',function(){
+  var g=$('ndDots');
+  var bL=branch(g,[[60,150],[341,150]],6);
+  var bT=branch(g,[[360,40],[360,141]],6);
+  var bR=branch(g,[[379,150],[660,150]],7);
+  var gz1=mkGauge('g1',170,150),gz2=mkGauge('g2',360,80),gz3=mkGauge('g3',540,150);
+  var st={i1:2,i2:1,cut:false};
+  function apply(){
+    var i1=st.cut?0:st.i1, i2=st.cut?0:st.i2, i3=st.cut?0:(st.i1+st.i2);
+    bL.i=i1;bT.i=i2;bR.i=i3;
+    gz1.set(i1,5);gz2.set(i2,5);gz3.set(i3,8);
+    $('rNd1').textContent=fmt(i1)+' А';
+    $('rNd2').textContent=fmt(i2)+' А';
+    $('rNd3').textContent=fmt(i3)+' А';
+    if(!st.cut){
+      $('ndChip').textContent='пришло '+fmt(i1+i2)+' А · ушло '+fmt(i3)+' А ✓';
+      $('ndChip').className='kchip ok';
+      $('ndStat').textContent='выход открыт · ток свободно уходит по правой ветке';
+    }else{
+      $('ndChip').textContent='пришло 0 А · ушло 0 А · копить заряд нельзя!';
+      $('ndChip').className='kchip warn';
+      $('ndStat').textContent='выход закрыт — ВСЕ токи встали в ноль!';
+    }
+  }
+  $('ndI1').addEventListener('input',function(){
+    st.i1=parseFloat(this.value);
+    $('ndV1').textContent=fmt(st.i1)+' А';apply();
+  });
+  $('ndI2').addEventListener('input',function(){
+    st.i2=parseFloat(this.value);
+    $('ndV2').textContent=fmt(st.i2)+' А';apply();
+  });
+  var cutOnce=false;
+  $('ndCut').addEventListener('click',function(){
+    st.cut=!st.cut;
+    this.textContent=st.cut?'🔓 Открыть выход':'✂ Перекрыть выход';
+    $('ndSliders').classList.toggle('off',st.cut);
+    $('ndNote').hidden=!st.cut;
+    apply();
+    if(st.cut&&!cutOnce){cutOnce=true;
+      prof('Ага! Перекрыли выход — и входы замолчали. Заряд копить нельзя, вот первый закон и заставил всю цепь остановиться. Это не арифметика — это физика!');}
+    if(!st.cut)prof('Выход открыт — токи вернулись. Пришло и ушло снова совпадает копейка в копейку!');
+  });
+  ndTick=function(dt){runBranch(bL,dt);runBranch(bT,dt);runBranch(bR,dt);};
+  apply();
+});
+
+/* ═══ ЛАБОРАТОРИЯ КОНТУРА ═══ */
+safe('лаборатория-контура',function(){
+  var E=4.5;
+  var B0=0.05603,B1=0.07759,A1=0.28017,A2=0.34052,C1=0.78017,C2=0.84052;
+  var st={R1:3,R2:6,I:0.5,U1:1.5,U2:3,s:0,shown:false};
+  var poly=$('vPoly'),vDot=$('vDot'),walkDot=$('walkDot'),walkV=$('walkV'),midLine=$('midLine');
+  function Vfunc(s){
+    if(s<B0)return 0;
+    if(s<B1)return E*(s-B0)/(B1-B0);
+    if(s<A1)return E;
+    if(s<A2)return E-st.U1*(s-A1)/(A2-A1);
+    if(s<C1)return E-st.U1;
+    if(s<C2)return (E-st.U1)-st.U2*(s-C1)/(C2-C1);
+    return 0;
+  }
+  function walkPos(s){
+    if(s<0.12069)return{x:140,y:210-1160*s};
+    if(s<0.5)return{x:140+1160*(s-0.12069),y:70};
+    if(s<0.62069)return{x:580,y:70+1160*(s-0.5)};
+    return{x:580-1160*(s-0.62069),y:210};
+  }
+  function redraw(){
+    st.I=E/(st.R1+st.R2);
+    st.U1=st.I*st.R1;st.U2=st.I*st.R2;
+    $('rI').textContent=fmt(st.I,2)+' А';
+    $('rU1').textContent=fmt(st.U1)+' В';
+    $('rU2').textContent=fmt(st.U2)+' В';
+    $('kvlChip').textContent='E − U₁ − U₂ = 4,5 − '+fmt(st.U1)+' − '+fmt(st.U2)+' = 0 В ✓';
+    $('r1Lbl').textContent='R₁ · '+st.R1+' Ом';
+    $('r2Lbl').textContent='R₂ · '+st.R2+' Ом';
+    var pts='',k;
+    for(k=0;k<=100;k++){
+      var s=k/100;
+      pts+=(24+s*672).toFixed(1)+','+(316-Vfunc(s)*13).toFixed(1)+' ';
+    }
+    poly.setAttribute('points',pts);
+    var my=316-(E-st.U1)*13;
+    midLine.setAttribute('y1',my.toFixed(1));midLine.setAttribute('y2',my.toFixed(1));
+    $('midLbl').setAttribute('y',(my+13).toFixed(1));
+  }
+  $('lpR1').addEventListener('input',function(){
+    st.R1=+this.value;$('lpR1v').textContent=st.R1+' Ом';redraw();
+    if(!st.shown){st.shown=true;
+      prof('Меняй резисторы — жёлтый маршрут перестраивается, но начинается и заканчивается он всегда на нуле. Вот оно, ΣU = 0!');}
+  });
+  $('lpR2').addEventListener('input',function(){
+    st.R2=+this.value;$('lpR2v').textContent=st.R2+' Ом';redraw();
+  });
+  lpTick=function(dt){
+    var sp=0.05+st.I*0.055;
+    st.s=(st.s+sp*dt)%1;
+    var pos=walkPos(st.s);
+    walkDot.setAttribute('cx',pos.x.toFixed(1));
+    walkDot.setAttribute('cy',pos.y.toFixed(1));
+    var V=Vfunc(st.s);
+    walkV.setAttribute('x',clamp(pos.x+14,60,600).toFixed(1));
+    walkV.setAttribute('y',(pos.y-14).toFixed(1));
+    walkV.textContent=(V>=0?'+':'')+fmt(V,2)+' В';
+    vDot.setAttribute('cx',(24+st.s*672).toFixed(1));
+    vDot.setAttribute('cy',(316-V*13).toFixed(1));
+  };
+  redraw();
+});
+
+/* ═══ ОБА ЗАКОНА ═══ */
+safe('оба-закона',function(){
+  var E=9,R1=2;
+  var st={R2:4,R3:4,I1:0,I2:0,I3:0,U1:0,U23:0,noted:false};
+  var g=$('cbDots');
+  var b1=branch(g,[[90,125],[90,80],[433,80]],5);
+  var b2=branch(g,[[447,80],[620,80],[620,125]],4);
+  var b3=branch(g,[[440,87],[440,125]],3);
+  var b2b=branch(g,[[620,195],[620,240],[447,240]],4);
+  var b3b=branch(g,[[440,195],[440,233]],3);
+  var b4=branch(g,[[433,240],[90,240],[90,163]],5);
+  function apply(){
+    var R23=st.R2*st.R3/(st.R2+st.R3);
+    st.I1=E/(R1+R23);
+    st.U1=st.I1*R1;
+    st.U23=E-st.U1;
+    st.I2=st.U23/st.R2;
+    st.I3=st.U23/st.R3;
+    b1.i=st.I1;b4.i=st.I1;b2.i=st.I2;b2b.i=st.I2;b3.i=st.I3;b3b.i=st.I3;
+    $('cbI1').textContent=fmt(st.I1,2)+' А';
+    $('cbI2').textContent=fmt(st.I2,2)+' А';
+    $('cbI3').textContent=fmt(st.I3,2)+' А';
+    $('cbR2l').textContent=st.R2+' Ом';
+    $('cbR3l').textContent=st.R3+' Ом';
+    $('cbKcl').textContent='узел А: I₂ + I₃ = '+fmt(st.I2+st.I3,2)+' А = I₁ ✓';
+    $('cbKvl').textContent='контур: U₁ + U₂₃ = '+fmt(st.U1)+' + '+fmt(st.U23)+' = 9 В ✓';
+  }
+  $('cbR2').addEventListener('input',function(){
+    st.R2=+this.value;$('cbR2v').textContent=st.R2+' Ом';apply();
+    if(!st.noted){st.noted=true;
+      prof('Смотри: токи пересчитались, но оба чипа зелёные — законы сошлись. Так решают схемы: уравнения узлов и контуров!');}
+  });
+  $('cbR3').addEventListener('input',function(){
+    st.R3=+this.value;$('cbR3v').textContent=st.R3+' Ом';apply();
+    if(st.R3>=9)prof('R₃ огромное — почти весь ток ушёл через R₂. Ток ленив: выбирает лёгкий путь!');
+  });
+  cbTick=function(dt){
+    runBranch(b1,dt);runBranch(b2,dt);runBranch(b3,dt);
+    runBranch(b2b,dt);runBranch(b3b,dt);runBranch(b4,dt);
+  };
+  apply();
+});
+
+/* ═══ ИГРА ═══ */
+safe('игра-ток',function(){
+  var GAME=[
+    {t:'В узел втекают 3 А и 2 А. Сколько должно вытекать по третьему проводу?',
+     o:['1 А','3 А','5 А','6 А'],c:2,
+     w:'Первый закон: пришло 5 — столько же и уйдёт. Узел — не копилка!'},
+    {t:'В узел втекает 6 А. По двум веткам вытекает 4 А. Сколько по третьей?',
+     o:['1 А','2 А','3 А','4 А'],c:1,
+     w:'6 − 4 = 2 А. Баланс сходится всегда!'},
+    {t:'Втекают 2 А, вытекают 5 А. Одной ветки не хватает. Куда она течёт?',
+     o:['Ещё 3 А вытекает','Ещё 3 А втекает','Так не бывает'],c:1,
+     w:'Баланс: 2 + 3 = 5. Мы просто не угадали направление — ток может и втекать!'},
+    {t:'Батарея подняла потенциал на 9 В. Спуски на резисторах: 4 В и 2 В. Сколько «спускает» третий?',
+     o:['2 В','3 В','9 В'],c:1,
+     w:'Второй закон: подъёмы = спускам. 9 = 4 + 2 + 3.'},
+    {t:'Выход узла перекрыли. Что будет с токами во входных ветках?',
+     o:['Увеличатся','Останутся прежними','Стали нулём — заряд копить нельзя'],c:2,
+     w:'Проверь в лаборатории: узел не копит заряд, поэтому раз выход закрыт — вход обязан замолчать.'}
+  ];
+  var idx=0,ok=0,lock=false;
+  var tEl=$('gT'),pos=$('gPos'),score=$('gScore'),why=$('gWhy'),
+      next=$('gNext'),fin=$('gFin'),body=$('gBody'),btns=$('gBtns');
+  function render(){
+    lock=false;
+    tEl.textContent=GAME[idx].t;
+    pos.textContent='Задача '+(idx+1)+' из '+GAME.length;
+    score.textContent='Верно: '+ok+'/'+idx;
+    why.hidden=true;next.hidden=true;
+    while(btns.firstChild)btns.removeChild(btns.firstChild);
+    for(var i=0;i<GAME[idx].o.length;i++){
+      (function(n){
+        var b=document.createElement('button');
+        b.className='q-ans';b.type='button';b.textContent=GAME[idx].o[n];
+        b.addEventListener('click',function(){pick(n,b);});
+        btns.appendChild(b);
+      })(i);
+    }
+  }
+  function pick(n,btn){
+    if(lock)return;
+    lock=true;
+    var good=(n===GAME[idx].c);
+    for(var k=0;k<btns.children.length;k++)btns.children[k].disabled=true;
+    if(good){
+      ok++;btn.classList.add('good');
+      var r=btn.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);
+    }else{
+      btn.classList.add('bad');
+      btns.children[GAME[idx].c].classList.add('good');
+    }
+    why.textContent=(good?'Верно! ':'Мимо! ')+GAME[idx].w;
+    why.hidden=false;next.hidden=false;
+    next.textContent=(idx===GAME.length-1)?'Итоги':'Следующая задача';
+    score.textContent='Верно: '+ok+'/'+(idx+1);
+  }
+  next.addEventListener('click',function(){
+    idx++;
+    if(idx<GAME.length){render();return;}
+    body.hidden=true;fin.hidden=false;
+    $('gScoreF').textContent='Правильных ответов: '+ok+' из '+GAME.length;
+    $('gTitleF').textContent=ok===GAME.length?'Узлы и контуры дрожат!':ok>=3?'Кирхгоф одобряет!':'Правила уже почти в кармане!';
+    $('gTextF').textContent='Два правила — и любая развилка или кольцо решаются в уме. Осталось потренироваться!';
+    burst(innerWidth/2,innerHeight/3);
+  });
+  $('gAgain').addEventListener('click',function(){
+    idx=0;ok=0;fin.hidden=true;body.hidden=false;render();
+  });
+  render();
+});
+
+/* ═══ ТЕСТ ═══ */
+safe('тест',function(){
+  var QUIZ=[
+    {q:'Что утверждает первый закон Кирхгофа (правило узлов)?',
+     a:['Напряжение в узле всегда ноль','Заряд в узле не копится: сколько втекло — столько вытекло','Ток в узле всегда усиливается'],c:1,
+     hint:'Узел — не копилка. Что приходит, то и уходит.',
+     why:'ΣI = 0: втекающие токи равны вытекающим. Заряду негде копиться!'},
+    {q:'В узел втекает 5 А, по одной ветке вытекает 2 А. Сколько вытекает по второй?',
+     a:['7 А','3 А','5 А'],c:1,
+     hint:'Пришло 5 — сколько должно уйти всего?',
+     why:'5 − 2 = 3 А. Баланс узла сходится железно!'},
+    {q:'Что утверждает второй закон Кирхгофа (правило контуров)?',
+     a:['Ток в контуре всегда постоянный','Сумма напряжений по замкнутому контуру равна нулю','Сопротивление контура всегда ноль'],c:1,
+     hint:'Обошёл круг — вернулся на ту же «высоту потенциала».',
+     why:'ΣU = 0: подъёмы (батареи) равны спускам (резисторы). Иначе «высота» не сошлась бы!'},
+    {q:'Перекрыли выход узла. Что случится с токами входных веток?',
+     a:['Вырастут вдвое','Не изменятся','Станут равны нулю'],c:2,
+     hint:'Проверь кнопку «Перекрыть выход» в лаборатории.',
+     why:'Копить заряд узел не умеет: раз выходу ток не нужен, входам он и не прийдёт. Всё встало в ноль!'},
+    {q:'Как законы Кирхгофа связаны с формулами последовательного и параллельного соединения?',
+     a:['Это совсем другие законы, они противоречат','Это следствия Кирхгофа — частные случаи','Формулы старше и правильнее'],c:1,
+     hint:'Возьми simple цепи из урока про соединения и примени правила узлов и контуров.',
+     why:'Формулы «складываем» и «произведение пополам» выводятся из двух правил Кирхгофа. Теперь ты знаешь, откуда они!'},
+    {q:'Сколько лет было Густаву Кирхгофу, когда он опубликовал оба закона?',
+     a:['21 год','45 лет','70 лет'],c:0,
+     hint:'Он был студентом Кёнигсбергского университета.',
+     why:'21 год! А позже он с Бунзеном открыл цезий и рубидий по цвету пламени. Учись смело — время есть!'}
+  ];
+  var TITLES=function(s){return s===6?'Мастер схем!':s>=4?'Знаток Кирхгофа!':s>=1?'Стажёр-схемотехник':'Первые шаги — уже успех!';};
+  var qL=$('qLamps');
+  for(var i=0;i<QUIZ.length;i++){
+    var w=document.createElement('div');w.className='q-lamp';
+    w.innerHTML='<svg viewBox="0 0 24 34"><path class="bulb" d="M12 2a9 9 0 0 1 9 9c0 3.4-2 5.6-3.4 7.4-.8 1-1.1 2-1.2 3.1H7.6c-.1-1.1-.4-2.1-1.2-3.1C5 16.6 3 14.4 3 11a9 9 0 0 1 9-9z"/><rect x="7" y="23.6" width="10" height="3.2" rx="1.4" fill="#26221B"/><rect x="7.6" y="28.4" width="8.8" height="2.6" rx="1.2" fill="#26221B"/></svg>';
+    qL.appendChild(w);
+  }
+  var qi=0,qs=0,qFirst=true,qDone=false;
+  function renderQ(){
+    qDone=false;qFirst=true;
+    var q=QUIZ[qi];
+    $('qCount').textContent='Вопрос '+(qi+1)+' из '+QUIZ.length;
+    $('qText').textContent=q.q;
+    var box=$('qAnswers');
+    while(box.firstChild)box.removeChild(box.firstChild);
+    for(var i=0;i<q.a.length;i++){
+      (function(idx){
+        var b=document.createElement('button');
+        b.className='q-ans';b.type='button';b.textContent=q.a[idx];
+        b.addEventListener('click',function(){answer(idx,b);});
+        box.appendChild(b);
+      })(i);
+    }
+    $('qHint').hidden=true;
+    $('qHintBtn').hidden=false;$('qHintBtn').textContent='Показать подсказку';
+    $('qAfter').hidden=true;
+  }
+  function answer(i,btn){
+    if(qDone)return;
+    var q=QUIZ[qi];
+    if(i===q.c){
+      qDone=true;
+      btn.classList.add('good');
+      if(qFirst)qs++;
+      qL.children[qi].classList.add('lit');
+      var r=btn.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);
+      $('qWhy').textContent='Верно! '+q.why;
+      $('qHintBtn').hidden=true;$('qHint').hidden=true;
+      $('qAfter').hidden=false;
+      $('qNext').textContent=(qi===QUIZ.length-1)?'Показать результат':'Следующий вопрос';
+      var bs=$('qAnswers').children;
+      for(var k2=0;k2<bs.length;k2++)bs[k2].disabled=true;
+    }else{
+      qFirst=false;
+      btn.classList.add('bad');btn.disabled=true;
+      btn.classList.remove('shake');void btn.offsetWidth;btn.classList.add('shake');
+      $('qHint').textContent=q.hint;$('qHint').hidden=false;
+      $('qHintBtn').hidden=true;
+    }
+  }
+  $('qHintBtn').addEventListener('click',function(){
+    $('qHint').textContent=QUIZ[qi].hint;$('qHint').hidden=false;
+    $('qHintBtn').hidden=true;
+  });
+  $('qNext').addEventListener('click',function(){
+    qi++;
+    if(qi<QUIZ.length){renderQ();return;}
+    $('qBody').hidden=true;$('qFinal').hidden=false;
+    $('qfScore').textContent='Задач решено с первой попытки: '+qs+' из '+QUIZ.length;
+    $('qfTitle').textContent=TITLES(qs);
+    $('qfText').textContent=qs>=4?'Оба правила — в кармане! Любая схема мира теперь решаема: узлы дают уравнения токов, контуры — напряжений.'
+      :'Покрути лаборатории узла и контура ещё раз — правила оживут, и ответы придут сами!';
+    burst(innerWidth/2,innerHeight/3);
+  });
+  $('qRestart').addEventListener('click',function(){
+    qi=0;qs=0;
+    for(var k3=0;k3<qL.children.length;k3++)qL.children[k3].classList.remove('lit');
+    $('qFinal').hidden=true;$('qBody').hidden=false;
+    renderQ();
+  });
+  renderQ();
+});
+
+/* ═══ прогресс-полоска ═══ */
+safe('прогресс',function(){
+  var plDot=$('plDot'),plLamp=$('plLamp');
+  function onScroll(){
+    var max=document.documentElement.scrollHeight-innerHeight;
+    var p=max>0?clamp(scrollY/max,0,1):0;
+    var w=document.querySelector('.powerline').clientWidth-13;
+    plDot.style.transform='translateX('+(p*w).toFixed(1)+'px)';
+    plLamp.classList.toggle('lit',p>.985);
+  }
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('resize',onScroll);
+  onScroll();
+});
+
+/* ═══ главный цикл ═══ */
+var last=performance.now(),failed={};
+function frame(now){
+  var dt=clamp((now-last)/1000,.001,.05);last=now;
+  try{heroTick(dt);}catch(e){if(!failed.h){failed.h=1;BADGE.textContent='⚠ цикл hero: '+e.message;}}
+  try{ndTick(dt);}catch(e){if(!failed.n){failed.n=1;BADGE.textContent='⚠ цикл node: '+e.message;}}
+  try{lpTick(dt);}catch(e){if(!failed.l){failed.l=1;BADGE.textContent='⚠ цикл loop: '+e.message;}}
+  try{cbTick(dt);}catch(e){if(!failed.c){failed.c=1;BADGE.textContent='⚠ цикл both: '+e.message;}}
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+if(BADGE&&!badgeErr)BADGE.textContent='✓ интерактив активен';
+})();
+</script>
+</body>
+</html>
