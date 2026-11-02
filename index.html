@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" href="data:,"/>
 <title>Законы Кирхгофа — правила узлов и контуров для юных физиков</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +21,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
+  :where(a,button,input,summary,[tabindex]):focus-visible{outline:3px solid var(--i);outline-offset:4px}
   body{
     font-family:'Nunito',sans-serif;color:var(--ink);background-color:var(--paper);
     background-image:linear-gradient(var(--line) 1px,transparent 1px),
@@ -176,12 +178,12 @@
     .hero-grid,.lab-grid{grid-template-columns:1fr}
     .cards3{grid-template-columns:1fr}
   }
-  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 </style>
-</head>
+ <link rel="stylesheet" type="text/css" href="/entensys-xscript/abl.css" /> </head>
 <body>
 
-<div id="jsBadge">⏳ JS загружается…</div>
+<div id="jsBadge" role="status" aria-live="polite">⏳ JS загружается…</div>
 
 <div class="powerline"><div class="pl-wire"></div><div class="pl-dot" id="plDot"></div></div>
 <svg class="pl-lamp" id="plLamp" viewBox="0 0 24 34" aria-hidden="true">
@@ -209,7 +211,7 @@
     </div>
 
     <div class="hero-scene">
-      <svg id="heroSvg" viewBox="0 0 380 320" aria-label="Узел: два тока втекают, один вытекает">
+      <svg id="heroSvg" viewBox="0 0 380 320" role="img" aria-label="Узел: два тока втекают, один вытекает">
         <rect x="6" y="6" width="368" height="308" rx="16" fill="var(--bp)" stroke="var(--ink)" stroke-width="2.5"/>
         <text x="190" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">УЗЕЛ · ПРИШЛО = УШЛО</text>
         <path d="M30 160 H181 M190 30 V151 M199 160 H350" fill="none" stroke="var(--ink)" stroke-width="10" stroke-linecap="round"/>
@@ -283,7 +285,7 @@
     </div>
     <div class="lab-grid">
       <div class="scene-card">
-        <svg id="ndSvg" viewBox="0 0 720 300">
+        <svg id="ndSvg" viewBox="0 0 720 300" role="img" aria-label="Узел с тремя ветками и амперметрами">
           <rect x="6" y="6" width="708" height="288" rx="16" fill="var(--bp)" stroke="var(--ink)" stroke-width="2.5"/>
           <text x="360" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">ТРИ ВЕТКИ · ОДИН УЗЕЛ</text>
           <path d="M60 150 H341 M360 40 V141 M379 150 H660" fill="none" stroke="var(--ink)" stroke-width="10" stroke-linecap="round"/>
@@ -300,11 +302,11 @@
         <div id="ndSliders">
           <div class="ctl">
             <div class="clabel"><span>Ток источника 1 (слева)</span><b id="ndV1" style="color:var(--i-deep)">2,0 А</b></div>
-            <input type="range" id="ndI1" min="0" max="4" step="0.5" value="2" style="accent-color:var(--i)">
+            <input type="range" id="ndI1" min="0" max="4" step="0.5" value="2" aria-label="Ток источника 1" style="accent-color:var(--i)">
           </div>
           <div class="ctl">
             <div class="clabel"><span>Ток источника 2 (сверху)</span><b id="ndV2" style="color:var(--i-deep)">1,0 А</b></div>
-            <input type="range" id="ndI2" min="0" max="4" step="0.5" value="1" style="accent-color:var(--i)">
+            <input type="range" id="ndI2" min="0" max="4" step="0.5" value="1" aria-label="Ток источника 2" style="accent-color:var(--i)">
           </div>
         </div>
         <div class="reads">
@@ -314,7 +316,7 @@
         </div>
         <div><span class="kchip ok" id="ndChip">пришло 3,0 А · ушло 3,0 А ✓</span></div>
         <div class="btnrow">
-          <button class="tool" id="ndCut" type="button">✂ Перекрыть выход</button>
+          <button class="tool" id="ndCut" type="button" aria-pressed="false">✂ Перекрыть выход</button>
         </div>
         <p class="pair-note" id="ndNote" hidden><b>Смотри!</b> Выход закрыт — и входы встали в ноль.
            Узел не умеет копить заряд: раз оттуда ток не уходит, сюда он и течь не может.
@@ -347,7 +349,7 @@
     </div>
     <div class="lab-grid">
       <div class="scene-card">
-        <svg id="lpSvg" viewBox="0 0 720 348">
+        <svg id="lpSvg" viewBox="0 0 720 348" role="img" aria-label="Замкнутый контур и график потенциала">
           <rect x="6" y="6" width="708" height="336" rx="16" fill="var(--bp)" stroke="var(--ink)" stroke-width="2.5"/>
           <text x="360" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">ПО КОНТУРУ: ПОДЪЁМ НА БАТАРЕЕ · СПУСКИ НА РЕЗИСТОРАХ</text>
           <!-- контур -->
@@ -387,22 +389,22 @@
       <div class="panel">
         <div class="ctl">
           <div class="clabel"><span>Сопротивление R₁</span><b id="lpR1v" style="color:var(--r-deep)">3 Ом</b></div>
-          <input type="range" id="lpR1" min="1" max="10" step="1" value="3" style="accent-color:var(--r)">
+          <input type="range" id="lpR1" min="1" max="10" step="1" value="3" aria-label="Сопротивление R1" style="accent-color:var(--r)">
         </div>
         <div class="ctl">
           <div class="clabel"><span>Сопротивление R₂</span><b id="lpR2v" style="color:var(--r-deep)">6 Ом</b></div>
-          <input type="range" id="lpR2" min="1" max="10" step="1" value="6" style="accent-color:var(--r)">
+          <input type="range" id="lpR2" min="1" max="10" step="1" value="6" aria-label="Сопротивление R2" style="accent-color:var(--r)">
         </div>
         <div class="reads">
           <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">ток I</span><b id="rI">0,50 А</b></div>
           <div class="read" style="border-color:var(--u)"><span style="color:var(--u-deep)">U₁ = I·R₁</span><b id="rU1">1,5 В</b></div>
           <div class="read" style="border-color:var(--u)"><span style="color:var(--u-deep)">U₂ = I·R₂</span><b id="rU2">3,0 В</b></div>
         </div>
-        <div><span class="kchip ok" id="kvlChip">E − U₁ − U₂ = 4,5 − 1,5 − 3,0 = 0 В ✓</span></div>
+        <div><span class="kchip ok" id="kvlChip">ΣU = E − U₁ − U₂ = 0 В ✓</span></div>
         <p class="pair-note">Высотная аналогия: батарея — лифт наверх, резисторы — спуски с горы.
            Как ни меняй крутизну спусков, круг всегда замыкается на той же высоте!</p>
-        <p style="font-size:.9rem;color:#3d382e;margin-top:10px">Заметь: чем больше R₂, тем положе
-           его спуск на графике, но ток меньше — и спуск R₁ становится короче. Сумма — всегда 4,5 В.</p>
+        <p style="font-size:.9rem;color:#3d382e;margin-top:10px">Заметь: чем больше R₂, тем больше
+           его падение напряжения, но ток меньше — и падение напряжения на R₁ уменьшается. Сумма — всегда 4,5 В.</p>
       </div>
     </div>
   </div>
@@ -419,7 +421,7 @@
     </div>
     <div class="lab-grid">
       <div class="scene-card">
-        <svg id="cbSvg" viewBox="0 0 720 300">
+        <svg id="cbSvg" viewBox="0 0 720 300" role="img" aria-label="Схема с общим резистором и двумя параллельными ветками">
           <rect x="6" y="6" width="708" height="288" rx="16" fill="var(--bp)" stroke="var(--ink)" stroke-width="2.5"/>
           <text x="360" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bp-ink)" font-family="JetBrains Mono,monospace">УЗЕЛ А ДЕЛИТ ТОК · КОНТУР ЕГО СОБИРАЕТ</text>
           <path d="M90 130 V80 H620 V240 H90 V158 M440 80 V240" fill="none" stroke="var(--ink)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
@@ -455,11 +457,11 @@
       <div class="panel">
         <div class="ctl">
           <div class="clabel"><span>Сопротивление R₂</span><b id="cbR2v" style="color:var(--r-deep)">4 Ом</b></div>
-          <input type="range" id="cbR2" min="1" max="10" step="1" value="4" style="accent-color:var(--r)">
+          <input type="range" id="cbR2" min="1" max="10" step="1" value="4" aria-label="Сопротивление R2 в общей схеме" style="accent-color:var(--r)">
         </div>
         <div class="ctl">
           <div class="clabel"><span>Сопротивление R₃</span><b id="cbR3v" style="color:var(--r-deep)">4 Ом</b></div>
-          <input type="range" id="cbR3" min="1" max="10" step="1" value="4" style="accent-color:var(--r)">
+          <input type="range" id="cbR3" min="1" max="10" step="1" value="4" aria-label="Сопротивление R3" style="accent-color:var(--r)">
         </div>
         <div class="reads">
           <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">I₁ общий</span><b id="cbI1">2,25 А</b></div>
@@ -467,8 +469,8 @@
           <div class="read" style="border-color:var(--i)"><span style="color:var(--i-deep)">I₃ ветка</span><b id="cbI3">1,13 А</b></div>
         </div>
         <div>
-          <span class="kchip ok" id="cbKcl">узел А: I₂ + I₃ = 2,25 А = I₁ ✓</span><br>
-          <span class="kchip ok" id="cbKvl">контур: U₁ + U₂₃ = 9 В = E ✓</span>
+          <span class="kchip ok" id="cbKcl">узел А: I₂ + I₃ = I₁ = 2,25 А ✓</span><br>
+          <span class="kchip ok" id="cbKvl">контур: U₁ + U₂₃ = E = 9 В ✓</span>
         </div>
         <p style="font-size:.9rem;color:#3d382e;margin-top:10px">Два неизвестных тока — два уравнения:
            одно из узла А, другое из контура. Сделай R₃ большим — почти весь ток уйдёт через R₂:
@@ -494,8 +496,8 @@
       <div id="gBody">
         <div class="q-text" id="gT"></div>
         <div class="q-answers" id="gBtns"></div>
-        <div class="q-why" id="gWhy" hidden></div>
-        <button class="btn" id="gNext" type="button">Следующая задача</button>
+        <div class="q-why" id="gWhy" role="status" aria-live="polite" hidden></div>
+        <button class="btn" id="gNext" type="button" hidden>Следующая задача</button>
       </div>
       <div class="q-final" id="gFin" hidden>
         <div class="qf-score" id="gScoreF"></div>
@@ -526,7 +528,7 @@
         <button class="hint-btn" id="qHintBtn" type="button">Показать подсказку</button>
         <div class="q-hint" id="qHint" hidden style="margin-top:10px"></div>
         <div style="margin-top:16px" id="qAfter" hidden>
-          <div class="q-why" id="qWhy"></div>
+          <div class="q-why" id="qWhy" role="status" aria-live="polite"></div>
           <button class="btn" id="qNext" type="button">Следующий вопрос</button>
         </div>
       </div>
@@ -552,7 +554,7 @@
         <div><b>1845 год · автору 21</b><p>Оба закона опубликовал студент Густав Кирхгоф. Позже — спектральный анализ с Бунзеном и открытие цезия с рубидием!</p></div>
       </div>
       <p>Теперь понятно, откуда берутся формулы из урока про цепи: «последовательно — складываем,
-         параллельно — произведение пополам» — это следствия двух правил. А решатель верстака
+         параллельно — складываем проводимости» — это следствия двух правил. А решатель верстака
          из третьего урока выполнял их каждый кадр. Схемы больше не тёмный лес: у тебя есть карта!</p>
     </div>
   </div>
@@ -563,7 +565,7 @@
   <b>Законы Кирхгофа · урок десятый.</b> Ни один электрон на странице не потерялся и не остался лишним.
 </footer>
 
-<div id="tooltip" role="tooltip"></div>
+<div id="tooltip" role="tooltip" aria-hidden="true"></div>
 
 <script>
 (function(){
@@ -571,8 +573,16 @@
 var NS='http://www.w3.org/2000/svg';
 function $(id){return document.getElementById(id);}
 function clamp(v,a,b){return v<a?a:(v>b?b:v);}
-function fmt(v,d){if(d===undefined)d=1;return v.toFixed(d).replace('.',',');}
-var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fmt(v,d){
+  if(d===undefined)d=1;
+  if(!Number.isFinite(v))return '—';
+  var p=Math.pow(10,d),sign=v<0?-1:1;
+  var n=sign*Math.round(Math.abs(v)*p+Number.EPSILON*p)/p;
+  if(Object.is(n,-0))n=0;
+  return n.toFixed(d).replace('.',',');
+}
+var motionPreference=matchMedia('(prefers-reduced-motion: reduce)'),reduced=motionPreference.matches;
+if(motionPreference.addEventListener)motionPreference.addEventListener('change',function(e){reduced=e.matches;});
 
 var BADGE=$('jsBadge'),badgeErr=false;
 window.addEventListener('error',function(e){
@@ -592,11 +602,19 @@ var TERMS={
 };
 safe('словарик',function(){
   var tip=$('tooltip'),tipEl=null;
+  var terms=document.querySelectorAll('[data-term]');
+  for(var i=0;i<terms.length;i++){
+    terms[i].tabIndex=0;
+    terms[i].setAttribute('aria-describedby','tooltip');
+  }
+  function hideTip(){
+    tip.classList.remove('show');tip.setAttribute('aria-hidden','true');tipEl=null;
+  }
   function showTip(el){
     var def=TERMS[el.getAttribute('data-term')];if(!def)return;
-    tip.textContent=def;tip.classList.add('show');
+    tipEl=el;tip.textContent=def;tip.classList.add('show');tip.setAttribute('aria-hidden','false');
     var r=el.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight;
-    var x=clamp(r.left+r.width/2-tw/2,10,innerWidth-tw-10);
+    var x=clamp(r.left+r.width/2-tw/2,10,Math.max(10,innerWidth-tw-10));
     var y=r.top-th-11,below=(y<10);if(below)y=r.bottom+11;
     tip.style.left=x+'px';tip.style.top=y+'px';
     tip.style.setProperty('--ax',clamp(r.left+r.width/2-x,16,tw-16)+'px');
@@ -604,16 +622,25 @@ safe('словарик',function(){
   }
   document.addEventListener('mouseover',function(e){
     var t=e.target.closest?e.target.closest('[data-term]'):null;
-    if(t){tipEl=t;showTip(t);}
+    if(t)showTip(t);
   });
   document.addEventListener('mouseout',function(e){
-    if(tipEl&&(!e.relatedTarget||!tipEl.contains(e.relatedTarget))){tip.classList.remove('show');tipEl=null;}
+    if(tipEl&&(!e.relatedTarget||!tipEl.contains(e.relatedTarget)))hideTip();
+  });
+  document.addEventListener('focusin',function(e){
+    var t=e.target.closest?e.target.closest('[data-term]'):null;
+    if(t)showTip(t);
+  });
+  document.addEventListener('focusout',function(e){
+    if(tipEl&&e.target===tipEl)hideTip();
   });
   document.addEventListener('click',function(e){
     var t=e.target.closest?e.target.closest('[data-term]'):null;
-    if(t){tipEl=t;showTip(t);}
-    else tip.classList.remove('show');
+    if(t)showTip(t);else hideTip();
   });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')hideTip();});
+  document.addEventListener('scroll',function(){if(tipEl)hideTip();},true);
+  addEventListener('resize',hideTip);
 });
 
 var SPARK=['#F2A007','#18A78E','#E2593B','#F5C542','#26221B'];
@@ -672,7 +699,7 @@ function runBranch(b,dt){
   var v=b.i*55;
   for(var i=0;i<b.dots.length;i++){
     var d=b.dots[i];
-    if(v>0)d.t=(d.t+v*dt/b.p.L)%1;
+    if(v>0&&!reduced)d.t=(d.t+v*dt/b.p.L)%1;
     d.el.setAttribute('opacity',v>0?1:.3);
     var pos=b.p.at(d.t);
     d.el.setAttribute('cx',pos.x.toFixed(1));
@@ -748,7 +775,13 @@ safe('лаборатория-узла',function(){
   $('ndCut').addEventListener('click',function(){
     st.cut=!st.cut;
     this.textContent=st.cut?'🔓 Открыть выход':'✂ Перекрыть выход';
+    this.setAttribute('aria-pressed',String(st.cut));
     $('ndSliders').classList.toggle('off',st.cut);
+    var sliders=[$('ndI1'),$('ndI2')];
+    for(var i=0;i<sliders.length;i++){
+      sliders[i].tabIndex=st.cut?-1:0;
+      sliders[i].setAttribute('aria-disabled',String(st.cut));
+    }
     $('ndNote').hidden=!st.cut;
     apply();
     if(st.cut&&!cutOnce){cutOnce=true;
@@ -786,7 +819,7 @@ safe('лаборатория-контура',function(){
     $('rI').textContent=fmt(st.I,2)+' А';
     $('rU1').textContent=fmt(st.U1)+' В';
     $('rU2').textContent=fmt(st.U2)+' В';
-    $('kvlChip').textContent='E − U₁ − U₂ = 4,5 − '+fmt(st.U1)+' − '+fmt(st.U2)+' = 0 В ✓';
+    $('kvlChip').textContent='ΣU = E − U₁ − U₂ = 0 В ✓';
     $('r1Lbl').textContent='R₁ · '+st.R1+' Ом';
     $('r2Lbl').textContent='R₂ · '+st.R2+' Ом';
     var pts='',k;
@@ -809,7 +842,7 @@ safe('лаборатория-контура',function(){
   });
   lpTick=function(dt){
     var sp=0.05+st.I*0.055;
-    st.s=(st.s+sp*dt)%1;
+    if(!reduced)st.s=(st.s+sp*dt)%1;
     var pos=walkPos(st.s);
     walkDot.setAttribute('cx',pos.x.toFixed(1));
     walkDot.setAttribute('cy',pos.y.toFixed(1));
@@ -847,8 +880,8 @@ safe('оба-закона',function(){
     $('cbI3').textContent=fmt(st.I3,2)+' А';
     $('cbR2l').textContent=st.R2+' Ом';
     $('cbR3l').textContent=st.R3+' Ом';
-    $('cbKcl').textContent='узел А: I₂ + I₃ = '+fmt(st.I2+st.I3,2)+' А = I₁ ✓';
-    $('cbKvl').textContent='контур: U₁ + U₂₃ = '+fmt(st.U1)+' + '+fmt(st.U23)+' = 9 В ✓';
+    $('cbKcl').textContent='узел А: I₂ + I₃ = I₁ = '+fmt(st.I1,2)+' А ✓';
+    $('cbKvl').textContent='контур: U₁ + U₂₃ = E = 9 В ✓';
   }
   $('cbR2').addEventListener('input',function(){
     st.R2=+this.value;$('cbR2v').textContent=st.R2+' Ом';apply();
@@ -954,11 +987,11 @@ safe('тест',function(){
     {q:'Перекрыли выход узла. Что случится с токами входных веток?',
      a:['Вырастут вдвое','Не изменятся','Станут равны нулю'],c:2,
      hint:'Проверь кнопку «Перекрыть выход» в лаборатории.',
-     why:'Копить заряд узел не умеет: раз выходу ток не нужен, входам он и не прийдёт. Всё встало в ноль!'},
+     why:'Копить заряд узел не умеет: раз выходу ток не нужен, входам он и не придёт. Всё встало в ноль!'},
     {q:'Как законы Кирхгофа связаны с формулами последовательного и параллельного соединения?',
      a:['Это совсем другие законы, они противоречат','Это следствия Кирхгофа — частные случаи','Формулы старше и правильнее'],c:1,
-     hint:'Возьми simple цепи из урока про соединения и примени правила узлов и контуров.',
-     why:'Формулы «складываем» и «произведение пополам» выводятся из двух правил Кирхгофа. Теперь ты знаешь, откуда они!'},
+     hint:'Возьми простые цепи из урока про соединения и примени правила узлов и контуров.',
+     why:'Формулы «складываем сопротивления» и «складываем проводимости» выводятся из двух правил Кирхгофа. Теперь ты знаешь, откуда они!'},
     {q:'Сколько лет было Густаву Кирхгофу, когда он опубликовал оба закона?',
      a:['21 год','45 лет','70 лет'],c:0,
      hint:'Он был студентом Кёнигсбергского университета.',
@@ -1049,6 +1082,7 @@ safe('прогресс',function(){
   }
   addEventListener('scroll',onScroll,{passive:true});
   addEventListener('resize',onScroll);
+  if('ResizeObserver' in window)new ResizeObserver(onScroll).observe(document.body);
   onScroll();
 });
 
